@@ -3,12 +3,21 @@
 
 import { Batch, SensorData, Alert, PackagingRecord, Device, ThresholdConfig } from '../types';
 
-export const API_BASE = 'http://localhost:8000/api';
-export const WS_BASE = 'ws://localhost:8000/ws/telemetry';
+const RAW_BASE = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/+$/, '') || 'http://localhost:8000';
+export const API_BASE = RAW_BASE.endsWith('/api') ? RAW_BASE : `${RAW_BASE}/api`;
+
+const DEFAULT_WS = RAW_BASE.startsWith('https://')
+  ? RAW_BASE.replace('https://', 'wss://').replace(/\/api$/, '') + '/ws/telemetry'
+  : RAW_BASE.startsWith('http://')
+  ? RAW_BASE.replace('http://', 'ws://').replace(/\/api$/, '') + '/ws/telemetry'
+  : 'ws://localhost:8000/ws/telemetry';
+
+export const WS_BASE = (import.meta.env.VITE_WS_BASE as string | undefined) || DEFAULT_WS;
 
 export async function checkBackendHealth(): Promise<boolean> {
   try {
-    const res = await fetch('http://localhost:8000/health', { method: 'GET', signal: AbortSignal.timeout(1500) });
+    const healthUrl = `${RAW_BASE.replace(/\/api$/, '')}/health`;
+    const res = await fetch(healthUrl, { method: 'GET', signal: AbortSignal.timeout(1500) });
     return res.ok;
   } catch {
     return false;

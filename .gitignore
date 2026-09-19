@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Production build outputs
+dist/
+build/
+
+# Environment variables
+.env
+.env*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+env/
+venv/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
